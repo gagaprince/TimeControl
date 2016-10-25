@@ -52,13 +52,13 @@
                 "10月22日 星期六",
                 "10月22日 星期六",
                 "10月22日 星期六"];
-            var dateWheel = new DateWheelClass(dateList);
+            new DateWheelClass(30);
         },
         initHour:function(){
             new HourWheelClass();
         },
         initMinu:function(){
-            new MinuWheelClass(15);
+            new MinuWheelClass(10);
         }
     }
 
