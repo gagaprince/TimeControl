@@ -39,6 +39,8 @@ node_modules/
 # dist files
 #dist/
 
+bower_components/
+dist_webpack/
 
 #private config
 h5/src/config/config.js
