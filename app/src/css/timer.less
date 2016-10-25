@@ -1,0 +1,234 @@
+*{
+  margin:0;
+  padding:0;
+}
+
+.h-c(){
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+  box-orient: horizontal;
+  -webkit-box-orient: horizontal;
+  -moz-box-orient: horizontal;
+  -o-box-orient: horizontal;
+  box-pack: center;
+  -webkit-box-pack: center;
+  -moz-box-pack: center;
+  -o-box-pack: center;
+  box-align: center;
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  -o-box-align: center;
+}
+
+.h-u(){
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+  box-orient: horizontal;
+  -webkit-box-orient: horizontal;
+  -moz-box-orient: horizontal;
+  -o-box-orient: horizontal;
+  box-pack: center;
+  -webkit-box-pack: center;
+  -moz-box-pack: center;
+  -o-box-pack: center;
+  box-align: center;
+  -webkit-box-align: start;
+  -moz-box-align: start;
+  -o-box-align: start;
+}
+
+.h-l {
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+  box-orient: horizontal;
+  -webkit-box-orient: horizontal;
+  -moz-box-orient: horizontal;
+  -o-box-orient: horizontal;
+  box-pack: start;
+  -webkit-box-pack: start;
+  -moz-box-pack: start;
+  -o-box-pack: start;
+  box-align: center;
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  -o-box-align: center;
+}
+
+.h-r {
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+  box-orient: horizontal;
+  -webkit-box-orient: horizontal;
+  -moz-box-orient: horizontal;
+  -o-box-orient: horizontal;
+  box-pack: end;
+  -webkit-box-pack: end;
+  -moz-box-pack: end;
+  -o-box-pack: end;
+  box-align: center;
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  -o-box-align: center;
+}
+
+.v-c {
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+  box-orient: vertical;
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  -o-box-orient: vertical;
+  box-pack: center;
+  -webkit-box-pack: center;
+  -moz-box-pack: center;
+  -o-box-pack: center;
+  box-align: center;
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  -o-box-align: center;
+}
+
+.v-u {
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+  box-orient: vertical;
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  -o-box-orient: vertical;
+  box-pack: start;
+  -webkit-box-pack: start;
+  -moz-box-pack: start;
+  -o-box-pack: start;
+  box-align: center;
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  -o-box-align: center;
+}
+
+.v-d {
+  display: -webkit-box;
+  display: -moz-box;
+  display: box;
+  box-orient: vertical;
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  -o-box-orient: vertical;
+  box-pack: start;
+  -webkit-box-pack: end;
+  -moz-box-pack: end;
+  -o-box-pack: end;
+  box-align: center;
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  -o-box-align: center;
+}
+//变换原点
+.origin(@x:50%,@y:50%){
+  -webkit-transform-origin:@x @y;
+  -moz-transform-origin:@x @y;
+  -o-transform-origin:@x @y;
+  transform-origin:@x @y;
+}
+.scale(@x:1,@y:1){
+  -webkit-transform:scale(@x,@y);
+  -moz-transform:scale(@x,@y);
+  -o-transform:scale(@x,@y);
+  -o-transform:scale(@x,@y);
+  transform:scale(@x,@y);
+}
+//0.5px边框
+.half-border(@desc){
+  position: relative;
+  &:after{
+    content: "";
+    width:200%;
+    height: 200%;
+    @desc();
+    display:block;
+    position:absolute;
+    .scale(0.5,0.5);
+    z-index:1;
+    .origin(0,0);
+  }
+}
+body{
+  .car-timer{
+    width:100%;
+    height:250px;
+    position:fixed;
+    bottom:0;
+    background:#fff;
+    .car-title{
+      width:100%;
+      height:40px;
+      position:relative;
+      .half-border({
+        border-bottom:1px solid #eee;
+      });
+      .car-btn-cansel{
+        position: absolute;
+        left: 0;
+        width:60px;
+        height: 40px;
+        .h-c();
+        color:#999;
+      }
+      .car-btn-sure{
+        position: absolute;
+        right:0;
+        width:60px;
+        height: 40px;
+        .h-c();
+        color:#ffab4e;
+      }
+    }
+    .car-body{
+      .h-c();
+      height:210px;
+      .car-time-show{
+        .h-u();
+        width:90%;
+        .car-time-frame{
+          height:180px;
+          overflow:hidden;
+          position: relative;
+          .mask-up,.mask-down{
+            width:100%;
+            height:75px;
+            position: absolute;
+            z-index:1;
+            background:rgba(255,255,255,.5);
+          }
+          .mask-down{
+            bottom: 0;
+          }
+          .car-time-list{
+            font-size:18px;
+            .car-time-date{
+              height:30px;
+              width:175px;
+              .h-c();
+            }
+            .car-time-hour{
+              width:80px;
+              height:30px;
+              .h-c();
+            }
+            .car-time-minu{
+              width:80px;
+              height:30px;
+              .h-c();
+            }
+          }
+        }
+
+      }
+    }
+  }
+}
