@@ -21,8 +21,9 @@ var DateUtil = {
             return "";
         }
         var time = date.getTime();
-        date.setTime(time+nms);
-        return date;
+        var newDate = new Date();
+        newDate.setTime(time+nms);
+        return newDate;
     },
     //返回周几
     dateWeekDay:function(date){

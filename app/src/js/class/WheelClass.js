@@ -13,29 +13,31 @@ var WheelClass = HClass.extend({
     skew:75,//这个为纠偏量 是指默认情况下item偏离正常位置的值
 
     stopMoveFlag:false,
-    ctor:function(id,textList,current){
-        this.init(id,textList,current);
+    ctor:function(id){
+        this.init(id);
     },
-    init:function(id,textList,current){
+    init:function(id){
         if(!id){
             throw "wheelClass need a dom id";
         }
-        if(!textList){
-            throw "wheelClass need a array of text!";
-        }
         this.id = id;
-        this.textList = textList;
         this.ele = $("#"+id);
         if(this.ele.length==0){
             throw "the id dom is not exist!";
         }
         this.elList = this.ele.find('.car-time-list');
+        this.initListener();
+    },
+    resetTextList:function(textList,current){
+        if(!textList){
+            throw "wheelClass need a array of text!";
+        }
+        this.textList = textList;
         if(current){
             this.currentText = current;
         }
         this.initList();
         this.resetPos();
-        this.initListener();
     },
     initList:function(){
         var currentText = this.currentText;
@@ -64,19 +66,26 @@ var WheelClass = HClass.extend({
         var _this = this;
         this._cacularNowPos(datY,function(pos,isend){//是否触发了边界
             _this._transLateTo(-pos,needDuration);
+//            console.log("fromBufferMove&&isend:"+(fromBufferMove&&isend));
             if(isUpdate||(fromBufferMove&&isend)){
                 var currentIndex = _this._cacularNowIndex(datY);
+//                console.log("currentIndex:"+currentIndex);
                 _this.currentIndex=currentIndex;
                 _this.resetPos();
+                _this.onCurrentIndexChange();//当滚轮变化时触发；
             }
         });
-
+    },
+    onCurrentIndexChange:function(){
+        //这个方法会在子方法中被重写
     },
     _cacularNowIndex:function(datY){
         var  textList =this.textList;
         var currentIndex = this.currentIndex;
         var step = this.step;
+//        console.log("cacularDaty:"+datY);;
         currentIndex = currentIndex-Math.floor(datY/step+0.5);
+//        console.log("_cacularNowIndex:"+currentIndex);
         if(currentIndex<0){
             currentIndex=0;
         }
@@ -158,15 +167,21 @@ var WheelClass = HClass.extend({
             timeStart = timeEnd;
         },false);
         elDom.addEventListener("touchend",function(e){
+//            console.log("touchend");
             var touch = e.changedTouches[0];
 
             touchEnd = {
                 x:touch.pageX,
                 y:touch.pageY
             }
+//            console.log("touchEnd");
+//            console.log(touchEnd);
+//            console.log("touchStart");
+//            console.log(touchStart);
             var datY = touchEnd.y-touchStart.y;
             //_this.resetPos(datY,true);
             //缓冲运动
+//            console.log("speed:"+speed);
             _this.bufferMove(datY,speed);
             touchCurrent=null;
             touchStart = null;
@@ -184,12 +199,17 @@ var WheelClass = HClass.extend({
     _move:function(dt,v,datY){
         var g = 0.005;//加速度
         var vend = Math.abs(v)-dt*g;
-        console.log("vend:"+vend);
+//        console.log("vend:"+vend);
         if(vend<0){
             vend=0;
         }
         var dis = (v*v-vend*vend)/2/g;
-        var nowDatY = datY+v/Math.abs(v)*dis;
+        var nowDatY = datY;
+        if(v!=0){
+            nowDatY = datY+v/Math.abs(v)*dis;
+        }
+
+//        console.log("resetPos datY:"+nowDatY);
         this.resetPos(nowDatY,vend==0,true);
         var _this = this;
         if(vend!=0){

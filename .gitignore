@@ -37,7 +37,7 @@ Thumbs.db
 node_modules/
 
 # dist files
-#dist/
+dist/
 
 bower_components/
 dist_webpack/

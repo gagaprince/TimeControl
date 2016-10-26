@@ -1,10 +1,24 @@
 "use strict";
 var WheelClass=require('./WheelClass.js');
+var QEvent = require('../util/EventManage.js').QEvent;
+var em = require('../util/EventManage.js').EventManager;
+var DateUtil = require('../util/DateUtil.js');
 var MinuWheelClass = WheelClass.extend({
     itemClassName:"car-time-minu",
-    ctor:function(step){
+    minTime:null,
+    maxTime:null,
+    timeStep:null,
+    ctrler:null,//父级控制组件
+    ctor:function(ctrl){
+        this.ctrler = ctrl;
+        this._super("carTimeControlMinu");
+    },
+    resetTextList:function(minTime,maxTime,step){
+        this.minTime = minTime;
+        this.maxTime = maxTime;
+        this.timeStep = step;
         var textList = this.produceTextList(step);
-        this._super("carTimeControlMinu",textList);
+        this._super(textList);
     },
     produceTextList:function(step){
         var textList = [];
@@ -18,6 +32,49 @@ var MinuWheelClass = WheelClass.extend({
             begin+=step;
         }
         return textList;
+    },
+    getSelect:function(){
+        var currentIndex = this.currentIndex;
+        var step = this.timeStep;
+        return currentIndex*step;
+    },
+    onCurrentIndexChange:function(){
+        var event = new QEvent(QEvent.EventName.ON_MINU_CHANGE);
+        em.postMsg(event);
+    },
+    resetPosByMinu:function(date){
+        var minu = date.getMinutes();
+        var index = Math.floor(minu/this.timeStep);
+        if(this.currentIndex!=index){
+            this.currentIndex = index;
+            this.resetPos();
+            this.onCurrentIndexChange();//当滚轮变化时触发；
+        }
+    },
+    resetMinPos:function(){
+        this.resetPosByMinu(this.minTime);
+    },
+    resetMaxPos:function(){
+        this.resetPosByMinu(this.maxTime);
+    },
+    initListener:function(){
+        this._super();
+        var _this = this;
+        var ctrl = this.ctrler;
+        em.addEventListener(QEvent.EventName.ON_TIME_CHANGE,function(e){
+            var nowSelect = ctrl.getSelectDate();
+            //如果当前所选时间小于最小时间 则需要调整
+            if(DateUtil.comparerDate(_this.minTime,nowSelect)){
+                //调整小时滚轮 到最小刻度
+                console.log("需要调整最小分钟数");
+                _this.resetMinPos();
+            }
+            if(DateUtil.comparerDate(nowSelect,_this.maxTime)){
+                //调整小时滚轮 到最小刻度
+                console.log("需要调整最大分钟数");
+                _this.resetMaxPos();
+            }
+        });
     }
 });
 module.exports = MinuWheelClass;
