@@ -8,15 +8,18 @@ var HourWheelClassHour = WheelClass.extend({
     minTime:null,
     maxTime:null,
     ctrler:null,//父级控制组件
+    currentTime:"",
     ctor:function(ctrl){
         this.ctrler = ctrl;
         this._super("carTimeControlHour");
     },
-    resetTextList:function(minTime,maxTime){
+    resetTextList:function(minTime,maxTime,currentTime){
         this.minTime = minTime;
         this.maxTime = maxTime;
+        this.currentTime = currentTime;
         var textList = this.produceTextList();
         this._super(textList);
+        this.initDefault();
     },
     produceTextList:function(){
         var textList = [];
@@ -29,6 +32,13 @@ var HourWheelClassHour = WheelClass.extend({
         }
         return textList;
     },
+    initDefault:function(){
+        var currentTime = this.currentTime;
+        if(currentTime!=""){
+            var currentDate = DateUtil.parseStrToDate(currentTime);
+            this.resetPosByHour(currentDate,true);
+        }
+    },
     getSelect:function(){
         var currentIndex = this.currentIndex;
         return currentIndex;
@@ -37,12 +47,14 @@ var HourWheelClassHour = WheelClass.extend({
         var event = new QEvent(QEvent.EventName.ON_HOUR_CHANGE);
         em.postMsg(event);
     },
-    resetPosByHour:function(date){
+    resetPosByHour:function(date,noExcuteChange){
         var hour = date.getHours();
         if(this.currentIndex!=hour){
             this.currentIndex = hour;
             this.resetPos();
-            this.onCurrentIndexChange();//当滚轮变化时触发；
+            if(!noExcuteChange){
+                this.onCurrentIndexChange();//当滚轮变化时触发；
+            }
         }
     },
     resetMinPos:function(){
@@ -57,19 +69,26 @@ var HourWheelClassHour = WheelClass.extend({
         var ctrl = this.ctrler;
         em.addEventListener(QEvent.EventName.ON_TIME_CHANGE,function(e){
             var nowSelect = ctrl.getSelectDate();
-            //如果当前所选时间小于最小时间 则需要调整
-            if(DateUtil.comparerDate(_this.minTime,nowSelect)){
-                //调整小时滚轮 到最小刻度
-                console.log("需要调整最小小时数");
-                _this.resetMinPos();
+            if(nowSelect==-1){
+                //马上用车
+                _this.hide();
+            }else{
+                _this.show();
+                //如果当前所选时间小于最小时间 则需要调整
+                if(DateUtil.comparerDate(_this.minTime,nowSelect)){
+                    //调整小时滚轮 到最小刻度
+                    console.log("需要调整最小小时数");
+                    _this.resetMinPos();
+                }
+                console.log("maxtime");
+                console.log(_this.maxTime);
+                if(DateUtil.comparerDate(nowSelect,_this.maxTime)){
+                    //调整小时滚轮 到最小刻度
+                    console.log("需要调整最大小时数");
+                    _this.resetMaxPos();
+                }
             }
-            console.log("maxtime");
-            console.log(_this.maxTime);
-            if(DateUtil.comparerDate(nowSelect,_this.maxTime)){
-                //调整小时滚轮 到最小刻度
-                console.log("需要调整最大小时数");
-                _this.resetMaxPos();
-            }
+
         });
     }
 });

@@ -222,6 +222,12 @@ var WheelClass = HClass.extend({
             }
         }
 
+    },
+    hide:function(){
+        this.ele.hide();
+    },
+    show:function(){
+        this.ele.show();
     }
 });
 

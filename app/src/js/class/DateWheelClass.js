@@ -8,21 +8,27 @@ var DateWheelClass = WheelClass.extend({
     minTime:null,
     maxTime:null,
     ctrler:null,//父级控制组件
+    isLiji:false,
+    currentTime:"",
     ctor:function(ctrl){
         this.ctrler = ctrl;
         this._super("carTimeControlDate");
     },
-    resetTextList:function(minTime,maxTime){
+    resetTextList:function(minTime,maxTime,isLiji,currentTime){
         this.minTime = minTime;
         this.maxTime = maxTime;
-        var textList = this.produceTextList(minTime,maxTime);
+        this.isLiji = isLiji;
+        this.currentTime = currentTime;
+        var textList = this.produceTextList(minTime,maxTime,isLiji);
         this._super(textList);
+        this.initDefault();
     },
-    produceTextList:function(minTime,maxTime){
+    produceTextList:function(minTime,maxTime,isLiji){
         var textList=[];
         var now = minTime;
-        console.log(minTime);
-        console.log(maxTime);
+        if(isLiji){
+            textList.push("立即用车");
+        }
         function _myComparer(date1,date2){//只比较date1 date2的日期
             var maxDate = DateUtil.parseStrToDate(DateUtil.dateFormat("yyyy-MM-dd",date1));
             var nowDate = DateUtil.parseStrToDate(DateUtil.dateFormat("yyyy-MM-dd",date2));
@@ -43,8 +49,31 @@ var DateWheelClass = WheelClass.extend({
 
         return textList;
     },
+
+    initDefault:function(){
+        var currentTime = this.currentTime;
+        var currentIndex=0;
+        if(currentTime!=""){
+            var currentTimeDate = DateUtil.parseStrToDate(currentTime);
+            var currentDay = DateUtil.getDayDate(currentTimeDate);
+            var minDay = DateUtil.getDayDate(this.minTime);
+            var days = (currentDay.getTime()-minDay.getTime())/(24*3600000);
+            currentIndex = days;
+        }
+        if(this.isLiji){
+            currentIndex++;
+        }
+        this.currentIndex=currentIndex;
+        this.resetPos();
+    },
     getSelect:function(){
         var currentIndex = this.currentIndex;
+        if(this.isLiji){
+            if(currentIndex==0){
+                return -1;//返回-1 说明是立即用车
+            }
+            currentIndex--;
+        }
         var select = DateUtil.dateAdd(this.minTime,currentIndex*24*3600000);
         return DateUtil.dateFormat("yyyy-MM-dd",select);
     },

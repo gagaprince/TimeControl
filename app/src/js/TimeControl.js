@@ -28,19 +28,16 @@
 
     var timeControlInitFlag = false;
     var TimeControl = {
+        id:"carTimer",
+        ele:null,
+
         options:null,
         minTime:null,//最小时间限
         maxTime:null,//最大时间限
         minAviableTime:null,//最小可选时间
         maxAviableTime:null,//最大可选时间
         step:0,//最小时间刻度分钟
-
-        minDate:null,//最小日期
-        maxDate:null,//最大日期
-        minHour:null,//最小日期 的 最小小时
-        maxHour:null,//最大日期 的 最大小时
-        minMinu:null,//最小日期 最小小时 的最小分钟
-        maxMinu:null,//最大日期 最大小时 的 最大分钟
+        currentShowTime:"",
         showImmeButton:true,//是否显示马上用车
 
         dateControl:null,
@@ -51,7 +48,7 @@
                 return;
             }
             timeControlInitFlag = true;
-
+            this.ele = $("#"+this.id);
             this.initListener();
 
         },
@@ -78,7 +75,14 @@
             $("#carTimeSure").on("click",function(){
                 //隐藏当前控件 并调用传入的回调
                 _this.hide();
-                alert(DateUtil.dateFormat('yyyy-MM-dd hh:mm',_this.getSelectDate()));
+                var select = _this.getSelectDate();
+                if(select==-1){
+                    //立即用车
+                    alert("立即用车");
+                }else{
+                    alert(DateUtil.dateFormat('yyyy-MM-dd hh:mm',_this.getSelectDate()));
+                }
+
             });
             $("#carTimeCansel").on("click",function(){
                 //直接隐藏当前控件
@@ -87,9 +91,11 @@
 
         },
         hide:function(){
-
+            this.ele.hide();
         },
-        show:function(){},
+        show:function(){
+            this.ele.show();
+        },
 
         selectDate:function(options){
             this.initOption(options);
@@ -103,19 +109,19 @@
             if(!this.dateControl){
                 this.dateControl = new DateWheelClass(this);
             }
-            this.dateControl.resetTextList(this.minAviableTime,this.maxAviableTime);
+            this.dateControl.resetTextList(this.minAviableTime,this.maxAviableTime,this.showImmeButton,this.currentShowTime);
         },
         initHour:function(){
             if(!this.hourControl){
                 this.hourControl = new HourWheelClass(this);
             }
-            this.hourControl.resetTextList(this.minAviableTime,this.maxAviableTime);
+            this.hourControl.resetTextList(this.minAviableTime,this.maxAviableTime,this.currentShowTime);
         },
         initMinu:function(){
             if(!this.minuControl){
                 this.minuControl = new MinuWheelClass(this);
             }
-            this.minuControl.resetTextList(this.minAviableTime,this.maxAviableTime,this.step);
+            this.minuControl.resetTextList(this.minAviableTime,this.maxAviableTime,this.step,this.currentShowTime);
         },
         initOption:function(options){
             //options min 是距离当前时间的最短可用时间 默认是0
@@ -125,17 +131,25 @@
                 max:525600,
                 minDate:"",
                 maxDate:"",
+                currentShowTime:"",//"2016-10-28 13:29",
                 showImmeButton:true,//是否显示立即用车
                 title:"",//控件提示title
                 step:15//最小时间刻度
             },options);
             this.initStep();
+            this.initImmeButtonFlag();
+            this.initCurrentShow();
             this.initDateRange();
             this.initAviableDateRange();
         },
         initStep:function(){
-            var options = this.options;
-            this.step = options.step;
+            this.step = this.options.step;
+        },
+        initImmeButtonFlag:function(){
+            this.showImmeButton = this.options.showImmeButton;
+        },
+        initCurrentShow:function(){
+            this.currentShowTime = this.options.currentShowTime;
         },
         initDateRange:function(){
             var options = this.options;
@@ -165,6 +179,12 @@
         getSelectDate:function(){
             //返回当前时间控件 选取的时间
             var selectDate = this.dateControl.getSelect();
+
+            if(selectDate==-1){
+                //立即用车
+                return -1;
+            }
+
             var selectHour = this.hourControl.getSelect();
             var selectMinu = this.minuControl.getSelect();
 

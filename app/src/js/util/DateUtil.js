@@ -9,6 +9,10 @@ var DateUtil = {
         var time2 = date2.getTime();
         return time1>time2;
     },
+    getDayDate:function(date){
+        var dateStr = this.dateFormat("yyyy-MM-dd",date);
+        return this.parseStrToDate(dateStr);
+    },
     //将字符串转为时间类型
     parseStrToDate:function(dateStr){
         var date = new Date(dateStr.replace(/-/g,"/"));
