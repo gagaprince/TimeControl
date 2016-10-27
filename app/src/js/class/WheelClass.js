@@ -10,7 +10,7 @@ var WheelClass = HClass.extend({
     itemClassName:"",
 
     step:30,//单个item的高
-    skew:75,//这个为纠偏量 是指默认情况下item偏离正常位置的值
+    skew:45,//这个为纠偏量 是指默认情况下item偏离正常位置的值
 
     stopMoveFlag:false,
     ctor:function(id){
@@ -49,7 +49,7 @@ var WheelClass = HClass.extend({
             if(text==currentText){
                 this.currentIndex = i;
             }
-            elList.append('<div class="'+this.itemClassName+'">'+text+'</div>');
+            elList.append('<div class="'+this.itemClassName+' cart-h-c">'+text+'</div>');
         }
         this.currentText = textList[this.currentIndex];
     },
@@ -150,6 +150,8 @@ var WheelClass = HClass.extend({
                 y:touch.pageY
             }
             timeStart = new Date().getTime();
+            e.stopPropagation();
+            e.preventDefault();
         },false);
         elDom.addEventListener("touchmove",function(e){
             var touch = e.touches[0];
@@ -165,6 +167,8 @@ var WheelClass = HClass.extend({
             timeEnd = new Date().getTime();
             speed = (touchCurrent.y-touchPre.y)/(timeEnd-timeStart);
             timeStart = timeEnd;
+            e.stopPropagation();
+            e.preventDefault();
         },false);
         elDom.addEventListener("touchend",function(e){
 //            console.log("touchend");
@@ -186,6 +190,8 @@ var WheelClass = HClass.extend({
             touchCurrent=null;
             touchStart = null;
             touchEnd = null;
+            e.stopPropagation();
+            e.preventDefault();
         },false);
     },
     stopBufferMove:function(){

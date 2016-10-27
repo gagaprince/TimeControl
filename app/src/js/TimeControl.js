@@ -1,21 +1,25 @@
 "use strict";
 (function(global, factory) {
+    var fa = factory();
     if (typeof define === "function") { // AMD || CMD
         if (define.amd) {
             define(function() {
-                return factory();
+                return fa;
             });
         } else if (define.cmd) {
             define(function(require, exports, module) {
-                module.exports = factory();
+                module.exports = fa;
             });
         }
     } else if (typeof module === "object" && typeof module.exports === "object") { // commonJS
-        module.exports = factory();
+        module.exports = fa;
     } else { // global
-        global.TimerControl = factory();
+
     }
+    window.TimeControl = fa;
 }(typeof window !== "undefined" ? window : this, function() {
+    require('../css/timer.less');
+    var timerHtml = require('./tpl/timer.html')({});
 
     var DateUtil = require('./util/DateUtil.js');
 
@@ -39,6 +43,7 @@
         step:0,//最小时间刻度分钟
         currentShowTime:"",
         showImmeButton:true,//是否显示马上用车
+        onSelectDate:null,  //选择时间之后的回调
 
         dateControl:null,
         hourControl:null,
@@ -48,9 +53,12 @@
                 return;
             }
             timeControlInitFlag = true;
+            this.initHtml();
             this.ele = $("#"+this.id);
             this.initListener();
-
+        },
+        initHtml:function(){
+            $("body").append(timerHtml);
         },
         postTimeChangeMsg:function(){
             var event = new QEvent(QEvent.EventName.ON_TIME_CHANGE);
@@ -60,29 +68,34 @@
             var _this = this;
             //添加对滚轮的侦听
             em.addEventListener(QEvent.EventName.ON_DATE_CHANGE,function(e){
-                console.log(_this.getSelectDate());
                 _this.postTimeChangeMsg();
             });
             em.addEventListener(QEvent.EventName.ON_HOUR_CHANGE,function(e){
-                console.log(_this.getSelectDate());
                 _this.postTimeChangeMsg();
             });
             em.addEventListener(QEvent.EventName.ON_MINU_CHANGE,function(e){
-                console.log(_this.getSelectDate());
                 _this.postTimeChangeMsg();
             });
             //添加对 取消 确定按钮的侦听
             $("#carTimeSure").on("click",function(){
                 //隐藏当前控件 并调用传入的回调
                 _this.hide();
-                var select = _this.getSelectDate();
-                if(select==-1){
-                    //立即用车
-                    alert("立即用车");
-                }else{
-                    alert(DateUtil.dateFormat('yyyy-MM-dd hh:mm',_this.getSelectDate()));
+                if(_this.onSelectDate){
+                    var select = _this.getSelectDate();
+                    var returnObj = {};
+                    var selectTime = null;
+                    if(select==-1){
+                        //立即用车
+                        returnObj["DateType"]=-1;
+                        selectTime = DateUtil.now();
+                    }else{
+                        returnObj["DateType"]=1;
+                        selectTime =_this.getSelectDate();
+                    }
+                    returnObj["selectedTimeInterval"]=selectTime.getTime()/1000;
+                    returnObj["selectUserTime"]=DateUtil.dateFormat('yyyy-MM-dd hh:mm',selectTime);
+                    _this.onSelectDate(returnObj);
                 }
-
             });
             $("#carTimeCansel").on("click",function(){
                 //直接隐藏当前控件
@@ -104,6 +117,7 @@
             this.initMinu();
             //手动触发一次时间改变的事件
             this.postTimeChangeMsg();//用来调整初始化时间
+            this.show();
         },
         initDate:function(){
             if(!this.dateControl){
@@ -133,14 +147,23 @@
                 maxDate:"",
                 currentShowTime:"",//"2016-10-28 13:29",
                 showImmeButton:true,//是否显示立即用车
-                title:"",//控件提示title
+                title:"请选择时间",//控件提示title
+                success:function(){},
                 step:15//最小时间刻度
             },options);
             this.initStep();
             this.initImmeButtonFlag();
             this.initCurrentShow();
             this.initDateRange();
+            this.initTitle();
             this.initAviableDateRange();
+            this.initCallBack();
+        },
+        initCallBack:function(){
+            this.onSelectDate = this.options.success;
+        },
+        initTitle:function(){
+            $("#carTimeTile").html(this.options.title);
         },
         initStep:function(){
             this.step = this.options.step;

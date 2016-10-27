@@ -1,1 +1,1 @@
-require('../timer.js');
+require('../TimeControl.js');

@@ -3,7 +3,7 @@
   padding:0;
 }
 
-.h-c(){
+.cart-h-c{
   display: -webkit-box;
   display: -moz-box;
   display: box;
@@ -21,7 +21,7 @@
   -o-box-align: center;
 }
 
-.h-u(){
+.cart-h-u{
   display: -webkit-box;
   display: -moz-box;
   display: box;
@@ -71,23 +71,28 @@
 body{
   .car-timer{
     width:100%;
-    height:250px;
+    height:190px;
     position:fixed;
     bottom:0;
+    z-index: 99;
     background:#fff;
     .car-title{
       width:100%;
       height:40px;
       position:relative;
+      font-size:14px;
+      color:#666;
       .half-border({
+        left: 0;
+        top: 0;
         border-bottom:1px solid #eee;
+        border-top:1px solid #999;
       });
       .car-btn-cansel{
         position: absolute;
         left: 0;
         width:60px;
         height: 40px;
-        .h-c();
         color:#999;
         z-index: 2;
       }
@@ -96,24 +101,21 @@ body{
         right:0;
         width:60px;
         height: 40px;
-        .h-c();
         color:#ffab4e;
         z-index: 2;
       }
     }
     .car-body{
-      .h-c();
-      height:210px;
+      height:150px;
       .car-time-show{
-        .h-u();
         width:90%;
         .car-time-frame{
-          height:180px;
+          height:120px;
           overflow:hidden;
           position: relative;
           .mask-up,.mask-down{
             width:100%;
-            height:75px;
+            height:45px;
             position: absolute;
             z-index:1;
             background:rgba(255,255,255,.6);
@@ -125,18 +127,18 @@ body{
             font-size:18px;
             .car-time-date{
               height:30px;
-              width:175px;
-              .h-c();
+//              width:46%;
+              margin: 0 10px;
             }
             .car-time-hour{
-              width:80px;
+//              width:21%;
               height:30px;
-              .h-c();
+              margin: 0 25px;
             }
             .car-time-minu{
-              width:80px;
+//              width:21%;
               height:30px;
-              .h-c();
+              margin: 0 10px;
             }
           }
         }
