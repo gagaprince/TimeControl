@@ -67,6 +67,7 @@ var WheelClass = HClass.extend({
         this._cacularNowPos(datY,function(pos,isend){//是否触发了边界
             _this._transLateTo(-pos,needDuration);
 //            console.log("fromBufferMove&&isend:"+(fromBufferMove&&isend));
+            _this.adjustStyle(datY);
             if(isUpdate||(fromBufferMove&&isend)){
                 var currentIndex = _this._cacularNowIndex(datY);
 //                console.log("currentIndex:"+currentIndex);
@@ -74,7 +75,27 @@ var WheelClass = HClass.extend({
                 _this.resetPos();
                 _this.onCurrentIndexChange();//当滚轮变化时触发；
             }
+
         });
+    },
+    adjustStyle:function(datY){
+        var currentIndex = this._cacularNowIndex(datY);
+        this._clearStyle();
+        this._addClassByIndex(currentIndex-1,"car-time-item-currpre1");
+        this._addClassByIndex(currentIndex-2,"car-time-item-currpre2");
+        this._addClassByIndex(currentIndex+1,"car-time-item-currnext1");
+        this._addClassByIndex(currentIndex+2,"car-time-item-currnext2");
+    },
+    _clearStyle:function(){
+        this.ele.find(".car-time-item-currpre1").removeClass("car-time-item-currpre1");
+        this.ele.find(".car-time-item-currpre2").removeClass("car-time-item-currpre2");
+        this.ele.find(".car-time-item-currnext1").removeClass("car-time-item-currnext1");
+        this.ele.find(".car-time-item-currnext2").removeClass("car-time-item-currnext2");
+    },
+    _addClassByIndex:function(index,className){
+        if(index>=0&&index<this.textList.length){
+            this.ele.find('.'+this.itemClassName).eq(index).addClass(className);
+        }
     },
     onCurrentIndexChange:function(){
         //这个方法会在子方法中被重写
