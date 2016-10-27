@@ -27,7 +27,7 @@ var DateWheelClass = WheelClass.extend({
         var textList=[];
         var now = minTime;
         if(isLiji){
-            textList.push("立即用车");
+            textList.push("马上用车");
         }
         function _myComparer(date1,date2){//只比较date1 date2的日期
             var maxDate = DateUtil.parseStrToDate(DateUtil.dateFormat("yyyy-MM-dd",date1));

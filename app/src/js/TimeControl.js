@@ -97,7 +97,7 @@
                     _this.onSelectDate(returnObj);
                 }
             });
-            $("#carTimeCansel").on("click",function(){
+            $("#carTimeCansel,#carTimerMask").on("click",function(){
                 //直接隐藏当前控件
                 _this.hide();
             });
