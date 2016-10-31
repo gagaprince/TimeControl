@@ -9,8 +9,8 @@ var WheelClass = HClass.extend({
     currentIndex:0,
     itemClassName:"",
 
-    step:30,//单个item的高
-    skew:45,//这个为纠偏量 是指默认情况下item偏离正常位置的值
+    step:24,//单个item的高
+    skew:43,//这个为纠偏量 是指默认情况下item偏离正常位置的值
 
     stopMoveFlag:false,
     ctor:function(id){
@@ -49,7 +49,7 @@ var WheelClass = HClass.extend({
             if(text==currentText){
                 this.currentIndex = i;
             }
-            elList.append('<div class="'+this.itemClassName+' cart-h-c">'+text+'</div>');
+            elList.append('<div class="'+this.itemClassName+'"><div class="cart-h-c" style="height:100%;">'+text+'</div></div>');
         }
         this.currentText = textList[this.currentIndex];
     },
@@ -65,9 +65,10 @@ var WheelClass = HClass.extend({
 
         var _this = this;
         this._cacularNowPos(datY,function(pos,isend){//是否触发了边界
+            _this._transAngleByDaty(datY);
             _this._transLateTo(-pos,needDuration);
 //            console.log("fromBufferMove&&isend:"+(fromBufferMove&&isend));
-            _this.adjustStyle(datY);
+//            _this.adjustStyle(datY);
             if(isUpdate||(fromBufferMove&&isend)){
                 var currentIndex = _this._cacularNowIndex(datY);
 //                console.log("currentIndex:"+currentIndex);
@@ -78,13 +79,58 @@ var WheelClass = HClass.extend({
 
         });
     },
-    adjustStyle:function(datY){
-        var currentIndex = this._cacularNowIndex(datY);
-        this._clearStyle();
-        this._addClassByIndex(currentIndex-1,"car-time-item-currpre1");
-        this._addClassByIndex(currentIndex-2,"car-time-item-currpre2");
-        this._addClassByIndex(currentIndex+1,"car-time-item-currnext1");
-        this._addClassByIndex(currentIndex+2,"car-time-item-currnext2");
+    _transAngleByDaty:function(datY){
+        var currentIndex = this.currentIndex;//当前还没有变化的index
+        var realIndex = this._cacularNowIndex(datY);//当前正中间显示的index
+        var step = this.step;
+        var defaultDatY = (currentIndex-realIndex)*step;
+
+        if(this.itemClassName=="car-time-minu"){
+            console.log("currentIndex:"+currentIndex);
+            console.log("realIndex:"+realIndex);
+        }
+
+        var currentIndexSkew = defaultDatY-datY;//正中间那个item相对于正常位置的偏移 向上为正
+
+        this._transAngleBySkew(realIndex,currentIndexSkew);
+        this._transAngleBySkew(realIndex+1,currentIndexSkew-step);
+        this._transAngleBySkew(realIndex-1,currentIndexSkew+step);
+        this._transAngleBySkew(realIndex-2,currentIndexSkew+2*step);
+        this._transAngleBySkew(realIndex+2,currentIndexSkew-2*step);
+        this._transAngleBySkew(realIndex-3,currentIndexSkew+3*step);
+        this._transAngleBySkew(realIndex+3,currentIndexSkew-3*step);
+
+
+    },
+    _transAngleBySkew:function(index,skew){
+        if(index<0||index>this.textList.length-1){
+            return;
+        }
+
+        var r = 60;
+        var rad = skew/r;//偏移角度
+
+        var deg = rad/Math.PI*180;
+        var dis = skew*Math.sin(rad);
+
+        if(this.itemClassName=="car-time-minu"){
+            console.log("index:"+index);
+            console.log("deg:"+deg);
+        }
+
+        this.ele.find('.'+this.itemClassName).eq(index).css({
+            "perspective": "400px",
+            "-webkit-transform":"rotate3d(1,0,0,"+deg+"deg)",//,translate3d(0,0,-"+dis+"px)",
+            "-moz-transform":"rotate3d(1,0,0,"+deg+"deg)",//,translate3d(0,0,-"+dis+"px)",
+            "-0-transform":"rotate3d(1,0,0,"+deg+"deg)",//,translate3d(0,0,-"+dis+"px)",
+            "transform":"rotate3d(1,0,0,"+deg+"deg)"//,translate3d(0,0,-"+dis+"px)"
+        });
+        this.ele.find('.'+this.itemClassName).eq(index).find('div').css({
+            "-webkit-transform":"translate3d(0,0,-"+dis+"px)",
+            "-moz-transform":"translate3d(0,0,-"+dis+"px)",
+            "-0-transform":"translate3d(0,0,-"+dis+"px)",
+            "transform":"translate3d(0,0,-"+dis+"px)"
+        });
     },
     _clearStyle:function(){
         this.ele.find(".car-time-item-currpre1").removeClass("car-time-item-currpre1");
@@ -153,6 +199,8 @@ var WheelClass = HClass.extend({
             "-o-transition-duration":duration+"s",
             "transition-duration":duration+"s"
         });
+
+
     },
     initListener:function(){
         var el = this.ele;
