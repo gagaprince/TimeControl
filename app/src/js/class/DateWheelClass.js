@@ -35,7 +35,7 @@ var DateWheelClass = WheelClass.extend({
             return DateUtil.comparerDate(maxDate,nowDate);
         }
         for(var i=0;!_myComparer(now,maxTime)&&i<365;i++){
-            var fm = "MM月dd日 星期D";
+            var fm = "MM月dd日 周D";
             if(i==0){
                 if(DateUtil.dateFormat("yyyy-MM-dd")==DateUtil.dateFormat("yyyy-MM-dd",now)){
                     fm = "MM月dd日 今天";
